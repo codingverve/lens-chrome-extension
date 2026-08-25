@@ -1,0 +1,250 @@
+/* ============================================================
+   Ye Wala Popup Styles – Shadcn/ui Aesthetic
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #ffffff;
+  --fg: #0f172a;
+  --muted: #f1f5f9;
+  --muted-fg: #64748b;
+  --border: #e2e8f0;
+  --primary: #0f172a;
+  --primary-fg: #f8fafc;
+  --primary-hover: #1e293b;
+  --radius: 0.5rem;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  min-width: 320px;
+  max-width: 320px;
+  min-height: 420px;
+  overflow: hidden;
+}
+
+.popup-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  background: var(--bg);
+  min-height: 420px;
+}
+
+/* ---- Header ---- */
+.popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.popup-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.popup-logo-icon {
+  width: 32px;
+  height: 32px;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg);
+  font-size: 16px;
+}
+.popup-logo-icon svg { width: 18px; height: 18px; }
+
+.popup-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--fg);
+  line-height: 1.2;
+}
+
+.popup-subtitle {
+  font-size: 11px;
+  color: var(--muted-fg);
+  font-weight: 500;
+  margin-top: 1px;
+}
+
+.popup-badge {
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--fg);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+}
+
+/* ---- Status ---- */
+.popup-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted-fg);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #cbd5e1;
+  transition: all 0.3s ease;
+}
+
+.status-dot.active {
+  background: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  animation: dot-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes dot-pulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2); }
+  50% { box-shadow: 0 0 0 5px rgba(16, 185, 129, 0); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ---- Toggle Button ---- */
+.popup-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 12px 20px 16px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--primary);
+  color: var(--primary-fg);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.popup-toggle-btn:hover {
+  background: var(--primary-hover);
+}
+
+.popup-toggle-btn.deactivate {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--fg);
+  box-shadow: none;
+}
+.popup-toggle-btn.deactivate:hover {
+  background: var(--muted);
+}
+
+#btn-icon { font-size: 16px; display: flex; }
+#btn-icon svg { width: 16px; height: 16px; }
+
+/* ---- Stats ---- */
+.popup-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 20px 16px;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.stat-item {
+  flex: 1;
+  padding: 12px 16px;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--fg);
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--muted-fg);
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.stat-divider {
+  width: 1px;
+  height: 36px;
+  background: var(--border);
+}
+
+/* ---- Instructions ---- */
+.popup-instructions {
+  margin: 0 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.instruction-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.step-num {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.step-text {
+  font-size: 12px;
+  color: var(--muted-fg);
+  line-height: 1.5;
+  padding-top: 1px;
+}
+
+.step-text strong { color: var(--fg); font-weight: 600; }
+
+/* ---- Footer ---- */
+.popup-footer {
+  margin-top: auto;
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+  background: var(--muted);
+}
+
+.popup-footer-text {
+  font-size: 10px;
+  color: var(--muted-fg);
+}

@@ -1,0 +1,876 @@
+/* ============================================================
+   Lens – Content Script Injected Styles (Shadcn/ui aesthetic)
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --yw-bg: #ffffff;
+  --yw-fg: #0f172a;
+  --yw-muted: #f1f5f9;
+  --yw-muted-fg: #64748b;
+  --yw-border: #e2e8f0;
+  --yw-input: #e2e8f0;
+  --yw-primary: #0f172a;
+  --yw-primary-fg: #f8fafc;
+  --yw-primary-hover: #1e293b;
+  --yw-secondary: #f1f5f9;
+  --yw-secondary-fg: #0f172a;
+  --yw-secondary-hover: #e2e8f0;
+  --yw-destructive: #ef4444;
+  --yw-destructive-fg: #f8fafc;
+  --yw-destructive-hover: #dc2626;
+  --yw-ring: #94a3b8;
+  --yw-radius: 0.5rem;
+  --yw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --yw-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --yw-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --yw-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+/* ---- Hover Highlight Overlay ---- */
+.yw-highlight-overlay {
+  position: fixed;
+  pointer-events: none;
+  z-index: 2147483640;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.02);
+  transition: all 0.1s ease;
+}
+
+.yw-margin-overlay {
+  position: fixed;
+  pointer-events: none;
+  z-index: 2147483638;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+.yw-padding-overlay {
+  position: fixed;
+  pointer-events: none;
+  z-index: 2147483639;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+.yw-selected-overlay {
+  position: fixed;
+  pointer-events: none;
+  z-index: 2147483641;
+  border: 1px solid #000000;
+  border-radius: 4px;
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.06);
+  background: rgba(0, 0, 0, 0.03);
+}
+
+/* ---- Element Label Badge ---- */
+.yw-element-label {
+  position: fixed;
+  z-index: 2147483642;
+  background: #FFFFFF;
+  color: #000000;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 4px;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  outline: 1px solid #F5F5F5;
+}
+
+/* ---- Common Button Styles ---- */
+.yw-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: none;
+  gap: 8px;
+}
+.yw-btn:active { transform: scale(0.98); }
+.yw-btn-sm { padding: 6px 12px; font-size: 12px; }
+.yw-btn-icon { padding: 8px; }
+.yw-btn svg { width: 1.2em; height: 1.2em; flex-shrink: 0; }
+
+.yw-btn-primary {
+  background: #141B34;
+  color: #FFFFFF;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+.yw-btn-primary:hover { background: #000000; }
+
+.yw-btn-secondary {
+  background: #F0F2F4;
+  color: #000000;
+}
+.yw-btn-secondary:hover { background: #E2E8F0; }
+
+.yw-btn-outline {
+  background: transparent;
+  border: 1px solid #E5E5E5;
+  color: #000000;
+}
+.yw-btn-outline:hover {
+  background: #F0F2F4;
+}
+
+.yw-btn-danger {
+  background: #EF4444;
+  color: #FFFFFF;
+}
+.yw-btn-danger:hover { background: #DC2626; }
+
+.yw-btn-ghost {
+  background: transparent;
+  color: #000000;
+}
+.yw-btn-ghost:hover {
+  background: #F0F2F4;
+}
+
+/* ---- Input Styles ---- */
+.yw-input {
+  display: flex;
+  height: 36px;
+  width: 100%;
+  border-radius: 4px;
+  border: 1px solid #E5E5E5;
+  background: transparent;
+  padding: 6px 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #000000;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+.yw-input:focus {
+  outline: none;
+  border-color: #000000;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+}
+.yw-input::placeholder { color: #8F8F8F; }
+
+/* ---- Annotation Popover ---- */
+#yw-popover {
+  position: fixed;
+  z-index: 2147483645;
+  width: 320px;
+  background: #FFFFFF;
+  border-radius: 8px;
+  outline: 1px solid #F5F5F5;
+  box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.06), 0 8px 24px rgba(0, 0, 0, 0.06);
+  font-family: 'Inter', sans-serif;
+  color: #000000;
+  overflow: hidden;
+  animation: yw-zoom-in 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+  transform-origin: top left;
+}
+
+@keyframes yw-zoom-in {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.yw-popover-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid var(--yw-border);
+}
+
+.yw-popover-header .yw-tag {
+  background: var(--yw-muted);
+  color: var(--yw-fg);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.yw-popover-header .yw-selector {
+  flex: 1;
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--yw-muted-fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.yw-popover-close {
+  background: transparent;
+  border: none;
+  color: var(--yw-muted-fg);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.yw-popover-close:hover { background: var(--yw-secondary); color: var(--yw-fg); }
+
+.yw-popover-body {
+  padding: 14px;
+}
+
+.yw-popover-body textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: transparent;
+  border: 1px solid #E5E5E5;
+  border-radius: 4px;
+  color: #000000;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  padding: 10px 12px;
+  resize: vertical;
+  min-height: 80px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.yw-popover-body textarea:focus {
+  border-color: #000000;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+}
+.yw-popover-body textarea::placeholder { color: #8F8F8F; }
+
+.yw-popover-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+.yw-popover-actions .yw-btn { flex: 1; }
+
+/* ---- Keyboard Nav Hint ---- */
+.yw-keynav-hint {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  padding: 10px 14px;
+  font-size: 11px !important;
+  line-height: 1 !important;
+  color: #8F8F8F;
+  background: #FAFAFA;
+  border-top: 1px solid #F5F5F5;
+}
+.yw-key {
+  background: #FFFFFF !important;
+  border: 1px solid #E5E5E5 !important;
+  border-radius: 4px !important;
+  padding: 2px 6px !important;
+  margin: 0 !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important;
+  line-height: 1.2 !important;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.05) !important;
+  box-sizing: border-box !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #000000;
+}
+
+/* ---- Hover Inspector Panel ---- */
+#yw-inspector-panel {
+  position: fixed;
+  z-index: 2147483645;
+  width: 280px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border-radius: 8px;
+  outline: 1px solid #F5F5F5;
+  box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.06), 0 8px 24px rgba(0, 0, 0, 0.08);
+  font-family: 'Inter', sans-serif;
+  color: #000000;
+  overflow: hidden;
+  transition: opacity 0.15s ease, transform 0.15s ease, top 0.1s ease, left 0.1s ease;
+  transform-origin: top left;
+}
+
+#yw-inspector-panel.yw-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.95);
+}
+
+.yw-inspector-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #F5F5F5;
+  background: #FAFAFA;
+}
+
+.yw-inspector-header .yw-tag {
+  background: #E5E5E5;
+  color: #000000;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.yw-inspector-header .yw-selector {
+  flex: 1;
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  color: #8F8F8F;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.yw-inspector-body {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.yw-inspector-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 12px;
+}
+
+.yw-prop-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.yw-prop-label {
+  font-size: 11px !important;
+  color: #8F8F8F !important;
+  background: transparent !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.yw-prop-val {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #000000 !important;
+  background: transparent !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.yw-color-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.1);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   TOOLBAR WIDGET — exact match of Paper design
+   Container: 44px wide, white bg, 8px radius, 1px solid #F5F5F5,
+              4px padding, 4px gap between 36px tall buttons.
+   ============================================================ */
+
+/* ── Toolbar wrapper ──────────────────────────────────────── */
+#yw-toolbar {
+  position: fixed;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2147483644;
+  font-family: 'Inter', sans-serif;
+  /* Absorb all pointer events so the page hover/click overlay
+     never fires on the toolbar itself */
+  pointer-events: auto;
+}
+
+/* ── Pill container (exact Paper styles) ──────────────────── */
+#yw-toolbar-items {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px;
+  width: 44px;
+  box-sizing: border-box;
+  background-color: #FFFFFF;
+  border-radius: 8px;
+  outline: 1px solid #F5F5F5;
+  box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  position: relative; /* For sliding background */
+}
+
+/* ── Sliding Hover/Active Background ──────────────────────── */
+.yw-hover-bg {
+  position: absolute;
+  top: 0;
+  left: 4px;
+  width: 36px; /* 44 - 8 */
+  height: 36px;
+  background-color: rgba(240, 242, 244, 0.4); /* Much lighter than active state */
+  border-radius: 4px;
+  pointer-events: none;
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.25s;
+  z-index: 0;
+  opacity: 0;
+}
+
+/* ── Individual button (36px height, full-width stretch) ────────── */
+.yw-toolbar-btn {
+  /* Layout */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  height: 36px;
+  flex-shrink: 0;
+  /* Appearance */
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: #8F8F8F;
+  cursor: pointer;
+  padding: 0;
+  position: relative;
+  z-index: 1; /* Above sliding bg */
+  transition: color 0.15s ease;
+}
+
+/* ── Active / Hover state (Stroke #000000) */
+.yw-toolbar-btn.yw-active-toggle {
+  background-color: #F0F2F4;
+  color: #000000 !important;
+}
+
+.yw-toolbar-btn.yw-hovered {
+  color: #000000 !important;
+}
+
+/* ── Floating Label ───────────────────────────────────────── */
+.yw-floating-label {
+  position: absolute;
+  left: calc(100% + 8px); /* tighter spacing to the toolbar */
+  top: 0;
+  background: #FFFFFF;
+  color: #000000;
+  border-radius: 4px; /* match the refined 4px radius */
+  box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.06);
+  outline: 1px solid #F5F5F5;
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.2s;
+  transform: translateY(0) translateX(-6px);
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+  /* Fixed size for scrolling effect */
+  height: 28px;
+  overflow: hidden;
+}
+.yw-floating-label.yw-visible {
+  opacity: 1;
+  transform: translateY(0) translateX(0);
+}
+
+.yw-label-scroller {
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.yw-label-item {
+  height: 28px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  white-space: nowrap;
+}
+
+/* ── Settings / Grid popover (floats right of toolbar) ───── */
+.yw-settings-popover {
+  position: absolute;
+  left: calc(100% + 8px); /* match 8px spacing of floating label */
+  top: 0;
+  width: 220px;
+  background: #FFFFFF;
+  border-radius: 8px;
+  box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  outline: 1px solid #F5F5F5;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-6px);
+  transition: opacity 0.25s, transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  z-index: 10;
+  cursor: default;
+}
+.yw-toolbar-btn.yw-popover-open .yw-settings-popover {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+  pointer-events: auto;
+}
+
+/* Settings row (checkbox + label) */
+.yw-settings-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+
+
+/* ---- JSON Modal ---- */
+#yw-json-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(4px);
+  z-index: 2147483646;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: yw-fade-in 0.2s;
+}
+
+.yw-json-modal-box {
+  background: #FFFFFF;
+  width: 90%;
+  max-width: 600px;
+  border-radius: 12px;
+  outline: 1px solid #F5F5F5;
+  box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.06), 0 12px 24px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  font-family: 'Inter', sans-serif;
+  animation: yw-zoom-in 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.yw-json-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #F5F5F5;
+}
+
+.yw-json-modal-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #000000;
+}
+
+.yw-json-modal-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #8F8F8F;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background 0.15s, color 0.15s;
+}
+.yw-json-modal-close:hover {
+  background: rgba(0,0,0,0.04);
+  color: #000000;
+}
+
+.yw-json-pre {
+  margin: 0;
+  padding: 20px;
+  background: #FAFAFA;
+  color: #141B34;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  overflow: auto;
+  flex: 1;
+}
+
+.yw-json-modal-footer {
+  padding: 16px 20px;
+  border-top: 1px solid #F5F5F5;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+@keyframes yw-fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* ---- Toast Notifications ---- */
+.yw-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #FFFFFF;
+  color: #000000;
+  padding: 10px 16px;
+  border-radius: 24px; /* pill shape */
+  outline: 1px solid #F5F5F5;
+  box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 2147483647;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: yw-toast-in 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+@keyframes yw-toast-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.yw-toast-out {
+  animation: yw-toast-out 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+@keyframes yw-toast-out {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(16px); }
+}
+
+.yw-toast svg { width: 18px; height: 18px; }
+.yw-toast.yw-success svg { color: #10b981; }
+.yw-toast.yw-error svg { color: #ef4444; }
+
+/* ---- Active Mode Banner ---- */
+#yw-active-banner {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2147483643;
+  background: var(--yw-bg);
+  border: 1px solid var(--yw-border);
+  border-radius: 24px;
+  padding: 8px 20px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--yw-fg);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: var(--yw-shadow-md);
+  pointer-events: none;
+}
+.yw-active-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  animation: yw-dot-pulse 2s ease-in-out infinite;
+}
+@keyframes yw-dot-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(16,189,129,0.3); }
+  50% { opacity: 0.6; box-shadow: 0 0 0 6px rgba(16,189,129,0); }
+}
+
+/* ---- Grid Layout Overlays ---- */
+#yw-page-grid {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2147483642;
+  display: flex;
+  justify-content: center;
+}
+#yw-page-grid-inner {
+  display: grid;
+  width: 100%;
+  height: 100vh;
+}
+.yw-grid-col {
+  background: rgba(239, 68, 68, 0.1);
+  height: 100%;
+}
+
+/* ---- Grid Settings Popover ---- */
+.yw-grid-popover {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  padding: 12px;
+  width: 180px;
+  font-family: 'Inter', sans-serif;
+}
+.yw-toolbar-btn.yw-popover-open .yw-grid-popover {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+  pointer-events: auto;
+}
+
+.yw-grid-setting {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.yw-grid-setting label {
+  font-size: 12px;
+  color: #aaa;
+  display: flex;
+  justify-content: space-between;
+}
+.yw-grid-setting input[type="range"] {
+  width: 100%;
+  cursor: pointer;
+  accent-color: var(--yw-primary, #3b82f6);
+}
+.yw-grid-setting input[type="number"] {
+  background: #222 !important;
+  border: 1px solid #333 !important;
+  color: #fff !important;
+  padding: 4px 8px !important;
+  border-radius: 4px !important;
+  font-size: 12px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  outline: none !important;
+  line-height: normal !important;
+}
+.yw-grid-setting input[type="number"]:focus {
+  border-color: var(--yw-primary) !important;
+  background: #2a2a2a !important;
+  color: #fff !important;
+}
+.yw-grid-setting .yw-setting-val {
+  color: #fff;
+}
+.yw-grid-toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ---- Inspector Mode Styles ---- */
+.yw-inspector-body {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+.yw-inspector-body::-webkit-scrollbar { width: 6px; }
+.yw-inspector-body::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+.yw-prop-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.yw-prop-group-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #888;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.yw-prop-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+.yw-prop-label {
+  color: #bbb;
+}
+.yw-prop-val {
+  color: #fff;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  background: #222;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+.yw-color-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  border: 1px solid #444;
+}
+
+/* ============================================================
+   MEASURE TOOL
+   ============================================================ */
+#yw-measure-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2147483647;
+}
+
+.yw-measure-line {
+  position: fixed; /* Bounding rect uses viewport coordinates, so lines should be fixed */
+  background: transparent;
+}
+
+.yw-measure-line-x {
+  height: 1px;
+  border-top: 1px dashed #f24e1e;
+}
+
+.yw-measure-line-y {
+  width: 1px;
+  border-left: 1px dashed #f24e1e;
+}
+
+.yw-measure-badge {
+  position: fixed;
+  background: #f24e1e;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  white-space: nowrap;
+  pointer-events: none;
+}

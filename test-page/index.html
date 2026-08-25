@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lens | The Designer's Plugin</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #111111;
+      --muted: #f4f4f4;
+      --muted-fg: #666666;
+      --border: #e0e0e0;
+      --primary: #000000;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--fg);
+      background-color: var(--bg);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---- Navigation ---- */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 48px;
+      border-bottom: 1px solid var(--border);
+    }
+    .logo {
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: -0.5px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 24px;
+    }
+    .nav-links a {
+      color: var(--muted-fg);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover {
+      color: var(--fg);
+    }
+
+    /* ---- Hero ---- */
+    .hero {
+      padding: 120px 48px;
+      max-width: 800px;
+    }
+    .hero h1 {
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 24px;
+      letter-spacing: -1px;
+    }
+    .hero p {
+      font-size: 16px;
+      color: var(--muted-fg);
+      margin-bottom: 48px;
+      max-width: 600px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 24px;
+      background: var(--primary);
+      color: var(--bg);
+      text-decoration: none;
+      font-weight: 500;
+      border: 1px solid var(--primary);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn:hover {
+      background: var(--bg);
+      color: var(--primary);
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--primary);
+      border-color: var(--border);
+    }
+    .btn-outline:hover {
+      border-color: var(--primary);
+    }
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+    }
+
+    /* ---- Features Grid ---- */
+    .features {
+      padding: 80px 48px;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 48px;
+    }
+    .feature-card {
+      padding: 32px;
+      background: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .feature-card h3 {
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+    .feature-card p {
+      color: var(--muted-fg);
+    }
+
+    /* ---- Plugin Playground ---- */
+    .playground {
+      padding: 80px 48px;
+      border-top: 1px solid var(--border);
+    }
+    .playground-header {
+      margin-bottom: 40px;
+    }
+    .playground-header h2 {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+    .playground-header p {
+      color: var(--muted-fg);
+    }
+
+    .test-area {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .test-box {
+      width: 200px;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px dashed var(--border);
+      background: #f9f9f9;
+      color: var(--muted-fg);
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+    .test-box.primary {
+      background: var(--primary);
+      color: var(--bg);
+      border: none;
+    }
+    .test-box.blue {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+      color: #1d4ed8;
+    }
+    
+    /* ---- Footer ---- */
+    footer {
+      padding: 48px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted-fg);
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo">[LENS]</div>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#playground">Playground</a>
+      <a href="https://github.com" target="_blank">GitHub</a>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <h1>A microscopic view of your UI.</h1>
+      <p>Lens is an intelligent browser plugin designed for developers and designers. Inspect computed styles, navigate DOM structures with your keyboard, and capture AI-ready annotations directly on your live website.</p>
+      
+      <div class="hero-actions">
+        <a href="#playground" class="btn">Test the Plugin</a>
+        <a href="#" class="btn btn-outline">Read the Docs</a>
+      </div>
+    </section>
+
+    <section id="features" class="features">
+      <div class="feature-card">
+        <h3>Localhost Comment Mode</h3>
+        <p>When running on localhost, clicking an element instantly opens a comment popover. Draft prompts or feedback tied directly to specific DOM nodes.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Production Inspector Mode</h3>
+        <p>Browse external websites and click any element to extract its layout, typography, colors, and spacing in a beautifully organized inspector UI.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Keyboard Navigation</h3>
+        <p>Hold Alt (or Ctrl) and use your arrow keys and brackets to traverse the DOM tree with precision. Easily select parent, child, or sibling nodes.</p>
+      </div>
+    </section>
+
+    <section id="playground" class="playground">
+      <div class="playground-header">
+        <h2>Plugin Playground</h2>
+        <p>Activate the Lens plugin (Cmd+Shift+X or via the extensions menu) and click on the elements below to see it in action.</p>
+      </div>
+      
+      <div class="test-area">
+        <div class="test-box">Default Box<br>margin: 0</div>
+        <div class="test-box primary" style="padding: 24px; border-radius: 8px;">Primary Box<br>padding: 24px</div>
+        <div class="test-box blue" style="border-width: 2px; font-weight: 700;">Blue Box<br>border: 2px</div>
+        <button class="btn" style="height: fit-content; align-self: center;">Test Button</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>&copy; 2026 Lens Plugin.</div>
+    <div>Built with Monospace.</div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lens</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="popup-wrap">
+    <!-- Header -->
+    <div class="popup-header">
+      <div class="popup-logo">
+        <div class="popup-logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+        </div>
+        <div>
+          <div class="popup-title">Lens</div>
+          <div class="popup-subtitle">AI-Native Annotator</div>
+        </div>
+      </div>
+      <div class="popup-badge" id="version-badge">v1.0</div>
+    </div>
+
+    <!-- Status -->
+    <div class="popup-status" id="popup-status">
+      <div class="status-dot" id="status-dot"></div>
+      <span id="status-text">Inactive</span>
+    </div>
+
+    <!-- Main Action -->
+    <button class="popup-toggle-btn" id="toggle-btn">
+      <span id="btn-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+      </span>
+      <span id="btn-label">Activate Lens</span>
+    </button>
+
+    <!-- Stats Row -->
+    <div class="popup-stats">
+      <div class="stat-item">
+        <div class="stat-value" id="stat-count">—</div>
+        <div class="stat-label">Annotations</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="stat-value" id="stat-page">—</div>
+        <div class="stat-label">Current Page</div>
+      </div>
+    </div>
+
+    <!-- Instructions -->
+    <div class="popup-instructions" id="popup-instructions">
+      <div class="instruction-step">
+        <div class="step-num">1</div>
+        <div class="step-text">Click <strong>Activate</strong> to start inspect mode</div>
+      </div>
+      <div class="instruction-step">
+        <div class="step-num">2</div>
+        <div class="step-text">Hover & click any element on the page</div>
+      </div>
+      <div class="instruction-step">
+        <div class="step-num">3</div>
+        <div class="step-text">Add your comment in the popover</div>
+      </div>
+      <div class="instruction-step">
+        <div class="step-num">4</div>
+        <div class="step-text">Hit <strong>Copy All</strong> in the sidebar → paste into AI</div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="popup-footer">
+      <span class="popup-footer-text">Keyboard: [ Parent ] Child ←→ Sibling &nbsp; Esc Close</span>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
