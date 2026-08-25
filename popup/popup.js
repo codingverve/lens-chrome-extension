@@ -104,7 +104,7 @@ toggleBtn.addEventListener('click', async () => {
   if (!isInjectableTab(tab)) {
     // Truly uninjectable pages
     setUI(false);
-    btnIcon.textContent = '⚠';
+    btnIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>';
     btnLabel.textContent = 'Open a website first';
     setTimeout(() => setUI(false), 2000);
     return;
@@ -129,7 +129,7 @@ toggleBtn.addEventListener('click', async () => {
     await loadStats(tab);
   } catch (injectErr) {
     setUI(false);
-    btnIcon.textContent = '⚠';
+    btnIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>';
     btnLabel.textContent = 'Reload the page & retry';
     setTimeout(() => setUI(false), 2500);
   } finally {
