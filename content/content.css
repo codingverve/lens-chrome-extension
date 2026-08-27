@@ -303,8 +303,7 @@
   font-size: 12px !important;
   color: #111827 !important;
   overflow: hidden;
-  pointer-events: none;
-  /* No transition on top/left — follow cursor instantly */
+  /* pointer-events enabled — panel locks the hover when cursor enters it */
   transition: opacity 0.12s ease;
 }
 

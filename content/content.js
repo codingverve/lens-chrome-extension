@@ -155,6 +155,8 @@ let marginOverlay = null, paddingOverlay = null, inspectorPanel = null;
 let currentHovered = null, currentSelected = null;
 let isPaused = false;
 let isHoverDisabled = false;
+let isInspectorHovered = false;  // ← freeze flag: cursor is over the inspector panel
+let inspectorRearmTimer = null;  // ← debounce for re-arming after leaving panel
 
 function createOverlayElements() {
   hoverOverlay = document.createElement('div');
@@ -186,6 +188,28 @@ function createOverlayElements() {
   inspectorPanel.id = 'yw-inspector-panel';
   inspectorPanel.className = 'yw-hidden';
   document.body.appendChild(inspectorPanel);
+
+  // ── Freeze hover when cursor enters the inspector panel ────────
+  // This prevents the highlighted element from switching when the
+  // user moves the cursor toward the panel (edge-case race condition).
+  inspectorPanel.addEventListener('mouseenter', () => {
+    isInspectorHovered = true;
+    if (inspectorRearmTimer) { clearTimeout(inspectorRearmTimer); inspectorRearmTimer = null; }
+    // Visually mark the panel as "locked on" element
+    inspectorPanel.style.outlineOffset = '2px';
+    inspectorPanel.style.outline = '2px solid #4F8EF7';
+  });
+
+  inspectorPanel.addEventListener('mouseleave', () => {
+    // Short delay so the cursor can move from the panel to a new element
+    // without the highlight instantly snapping to whatever is under the gap.
+    inspectorRearmTimer = setTimeout(() => {
+      isInspectorHovered = false;
+      inspectorRearmTimer = null;
+      inspectorPanel.style.outline = '';
+      inspectorPanel.style.outlineOffset = '';
+    }, 120);
+  });
 }
 
 function positionOverlayFixed(overlay, el) {
@@ -399,7 +423,9 @@ function onScroll() {
 }
 
 function onMouseMove(e) {
-  if (isPaused || isHoverDisabled) return;
+  // If the cursor is over the inspector panel, don't update — keep the
+  // element frozen so the user can read/copy from the panel freely.
+  if (isPaused || isHoverDisabled || isInspectorHovered) return;
   const el = e.target;
   if (isSkippable(el) || el === currentHovered) return;
   currentHovered = el;
