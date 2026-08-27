@@ -2,7 +2,7 @@
    Lens – Content Script Injected Styles (Shadcn/ui aesthetic)
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=display=swap');
 
 :root {
   --yw-bg: #ffffff;
@@ -201,13 +201,13 @@
   font-weight: 600;
   padding: 2px 6px;
   border-radius: 4px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
 }
 
 .yw-popover-header .yw-selector {
   flex: 1;
   font-size: 11px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   color: var(--yw-muted-fg);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -279,7 +279,7 @@
   border-radius: 4px !important;
   padding: 2px 6px !important;
   margin: 0 !important;
-  font-family: 'JetBrains Mono', monospace !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 10px !important;
   line-height: 1.2 !important;
   box-shadow: 0 1px 1px rgba(0,0,0,0.05) !important;
@@ -331,7 +331,7 @@
   letter-spacing: 0.04em !important;
   padding: 2px 6px !important;
   border-radius: 3px !important;
-  font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+  font-family: 'Inter', sans-serif !important;
   line-height: 1.4 !important;
   white-space: nowrap !important;
 }
@@ -339,7 +339,7 @@
 .yw-inspector-selector {
   flex: 1 !important;
   font-size: 10px !important;
-  font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+  font-family: 'Inter', sans-serif !important;
   color: #6B7280 !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
@@ -359,7 +359,7 @@
   padding: 5px 10px !important;
   background: #F3F4F6 !important;
   border-bottom: 1px solid #E5E7EB !important;
-  font-family: 'JetBrains Mono', monospace !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 11px !important;
   font-weight: 500 !important;
   color: #374151 !important;
@@ -407,7 +407,7 @@
 
 .yw-inspector-val {
   font-size: 11px !important;
-  font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+  font-family: 'Inter', sans-serif !important;
   color: #111827 !important;
   font-weight: 500 !important;
   text-align: right !important;
@@ -473,7 +473,7 @@
   padding: 0 !important;
   border: none !important;
   border-radius: 0 !important;
-  font-family: 'JetBrains Mono', monospace !important;
+  font-family: 'Inter', sans-serif !important;
   display: flex !important;
   align-items: center !important;
   gap: 6px !important;
@@ -715,7 +715,7 @@
   padding: 20px;
   background: #FAFAFA;
   color: #141B34;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: 12px;
   overflow: auto;
   flex: 1;
@@ -914,7 +914,7 @@
 }
 .yw-prop-val {
   color: #fff;
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-family: 'Inter', sans-serif;
   background: #222;
   padding: 2px 6px;
   border-radius: 4px;
