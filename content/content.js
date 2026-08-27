@@ -948,7 +948,12 @@ function createToolbarWidget() {
     const offsetY = btnRect.top - containerRect.top;
     hoverBg.style.transform = `translateY(${offsetY}px)`;
 
-    // Move floating label container
+    // Move floating label — but never show it while a popover is open
+    const anyPopoverOpen = toolbarEl.querySelector('.yw-popover-open');
+    if (anyPopoverOpen) {
+      floatingLabel.classList.remove('yw-visible');
+      return;
+    }
     const labelY = btnRect.top - containerRect.top + (btnRect.height / 2);
     floatingLabel.style.transform = `translateY(calc(${labelY}px - 50%))`;
     floatingLabel.classList.add('yw-visible');
