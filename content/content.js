@@ -454,20 +454,26 @@ function onOverlayClick(e) {
   if (isSkippable(el)) return;
   e.stopPropagation();
   e.preventDefault();
-  
+
+  // Always hide the hover inspector & overlays on any click
+  if (inspectorPanel) inspectorPanel.classList.add('yw-hidden');
+  if (marginOverlay) marginOverlay.style.display = 'none';
+  if (paddingOverlay) paddingOverlay.style.display = 'none';
+  hoverOverlay.style.display = 'none';
+  currentHovered = null;
+
   if (activeToolId === 'moveSelect') {
     currentSelected = el;
     updateSelectedOverlay(el);
     return;
   }
-  
+
   currentSelected = el;
   updateSelectedOverlay(el);
-  hoverOverlay.style.display = 'none';
-  elementLabel.style.display = 'none';
   if (typeof updateMeasurements === 'function') updateMeasurements();
   document.dispatchEvent(new CustomEvent('yw:elementSelected', { detail: { element: el } }));
 }
+
 
 function onKeyDown(e) {
   if (isPaused || isHoverDisabled) return;
