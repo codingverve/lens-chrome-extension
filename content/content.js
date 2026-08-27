@@ -192,10 +192,15 @@ function positionOverlayFixed(overlay, el) {
   if (!el) { overlay.style.display = 'none'; return; }
   const rect = el.getBoundingClientRect();
   overlay.style.display = 'block';
-  overlay.style.top = (rect.top - 2) + 'px';
-  overlay.style.left = (rect.left - 2) + 'px';
-  overlay.style.width = (rect.width + 4) + 'px';
-  overlay.style.height = (rect.height + 4) + 'px';
+  // Clamp to viewport so the overlay never crops at edges
+  const top = Math.max(0, rect.top);
+  const left = Math.max(0, rect.left);
+  const right = Math.min(window.innerWidth, rect.right);
+  const bottom = Math.min(window.innerHeight, rect.bottom);
+  overlay.style.top = top + 'px';
+  overlay.style.left = left + 'px';
+  overlay.style.width = Math.max(0, right - left) + 'px';
+  overlay.style.height = Math.max(0, bottom - top) + 'px';
 }
 
 function updateHoverOverlay(el) {
@@ -232,83 +237,155 @@ function updateHoverOverlay(el) {
 function updateInspectorPanel(el) {
   if (!inspectorPanel) return;
   inspectorPanel.classList.remove('yw-hidden');
+
   const style = window.getComputedStyle(el);
   const rect = el.getBoundingClientRect();
-  
+
+  // ── Margin overlay ──────────────────────────────────
   const mt = parseFloat(style.marginTop) || 0;
   const mr = parseFloat(style.marginRight) || 0;
   const mb = parseFloat(style.marginBottom) || 0;
   const ml = parseFloat(style.marginLeft) || 0;
-  
   if (mt || mr || mb || ml) {
     marginOverlay.style.display = 'block';
-    marginOverlay.style.top = (rect.top - mt) + 'px';
-    marginOverlay.style.left = (rect.left - ml) + 'px';
-    marginOverlay.style.width = (rect.width + ml + mr) + 'px';
+    marginOverlay.style.top    = (rect.top  - mt) + 'px';
+    marginOverlay.style.left   = (rect.left - ml) + 'px';
+    marginOverlay.style.width  = (rect.width  + ml + mr) + 'px';
     marginOverlay.style.height = (rect.height + mt + mb) + 'px';
     marginOverlay.style.borderWidth = `${mt}px ${mr}px ${mb}px ${ml}px`;
     marginOverlay.style.borderStyle = 'solid';
-    marginOverlay.style.borderColor = 'rgba(246, 204, 159, 0.66)'; // Chrome Margin Orange
+    marginOverlay.style.borderColor = 'rgba(246, 178, 107, 0.5)';
   } else {
     marginOverlay.style.display = 'none';
   }
 
+  // ── Padding overlay ───────────────────────────────
   const pt = parseFloat(style.paddingTop) || 0;
   const pr = parseFloat(style.paddingRight) || 0;
   const pb = parseFloat(style.paddingBottom) || 0;
   const pl = parseFloat(style.paddingLeft) || 0;
-  
   if (pt || pr || pb || pl) {
     paddingOverlay.style.display = 'block';
-    paddingOverlay.style.top = rect.top + 'px';
-    paddingOverlay.style.left = rect.left + 'px';
-    paddingOverlay.style.width = rect.width + 'px';
+    paddingOverlay.style.top    = rect.top  + 'px';
+    paddingOverlay.style.left   = rect.left + 'px';
+    paddingOverlay.style.width  = rect.width  + 'px';
     paddingOverlay.style.height = rect.height + 'px';
     paddingOverlay.style.borderWidth = `${pt}px ${pr}px ${pb}px ${pl}px`;
     paddingOverlay.style.borderStyle = 'solid';
-    paddingOverlay.style.borderColor = 'rgba(195, 221, 182, 0.66)'; // Chrome Padding Green
+    paddingOverlay.style.borderColor = 'rgba(126, 211, 138, 0.55)';
   } else {
     paddingOverlay.style.display = 'none';
   }
 
+  // ── Helpers ─────────────────────────────────────
   const selector = buildSelector(el);
   const tag = el.tagName.toLowerCase();
-  const cls = Array.from(el.classList).filter(c => !c.startsWith('yw-')).slice(0, 1).join('');
-  const displaySel = (selector.length > 35 ? '…' + selector.slice(-35) : selector);
+  const cls = Array.from(el.classList).filter(c => !c.startsWith('yw-')).slice(0, 2).join('.');
+  const displaySel = selector.length > 38 ? '…' + selector.slice(-38) : selector;
 
-  const pw = 280;
-  const ph = inspectorPanel.offsetHeight || 220;
-  let top = rect.bottom + 8;
-  let left = rect.left;
-  
-  if (top + ph > window.innerHeight) {
-    top = Math.max(8, rect.top - ph - 8);
+  // Compact a computed value: trim trailing zeros from colours, shorten 0px
+  function fmt(v) {
+    if (!v) return '—';
+    v = v.trim();
+    // '0px 0px 0px 0px' → '0'
+    if (/^(0px\s*)+$/.test(v)) return '0';
+    return v;
   }
-  if (left + pw > window.innerWidth) {
-    left = Math.max(8, window.innerWidth - pw - 8);
+
+  function swatchRow(color, label) {
+    return `<span class="yw-inspector-color-row">
+      <span class="yw-inspector-swatch" style="background:${color}"></span>
+      <span class="yw-inspector-val">${escapeHtml(label)}</span>
+    </span>`;
   }
-  
-  inspectorPanel.style.top = top + 'px';
-  inspectorPanel.style.left = left + 'px';
-  
+
+  function row(key, val) {
+    return `<div class="yw-inspector-row">
+      <span class="yw-inspector-key">${key}</span>
+      <span class="yw-inspector-val">${escapeHtml(String(val))}</span>
+    </div>`;
+  }
+
+  function colorRow(key, color) {
+    return `<div class="yw-inspector-row">
+      <span class="yw-inspector-key">${key}</span>
+      ${swatchRow(color, color)}
+    </div>`;
+  }
+
+  function divider() {
+    return '<div class="yw-inspector-divider"></div>';
+  }
+
+  const fSize  = style.fontSize  || '';
+  const fFamily = (style.fontFamily || '').split(',')[0].replace(/['"]/g,'').trim();
+  const fWeight = style.fontWeight || '';
+  const lHeight = style.lineHeight || '';
+  const display = style.display   || '';
+  const pos     = style.position  || '';
+  const margin  = fmt(style.margin);
+  const padding = fmt(style.padding);
+  const color   = style.color || '';
+  const bg      = style.backgroundColor || '';
+  const border  = style.border || '';
+  const radius  = style.borderRadius || '';
+  const opacity = style.opacity || '';
+  const zIndex  = style.zIndex || '';
+
   inspectorPanel.innerHTML = `
     <div class="yw-inspector-header">
-      <span class="yw-tag">${tag.toUpperCase()}${cls ? '.' + cls : ''}</span>
-      <span class="yw-selector" title="${escapeHtml(selector)}">${escapeHtml(displaySel)}</span>
+      <span class="yw-inspector-tag">${escapeHtml(tag.toUpperCase())}${cls ? '.' + escapeHtml(cls) : ''}</span>
+      <span class="yw-inspector-selector" title="${escapeHtml(selector)}">${escapeHtml(displaySel)}</span>
+    </div>
+    <div class="yw-inspector-size">
+      <span>${Math.round(rect.width)}</span>
+      <span class="yw-inspector-size-x">×</span>
+      <span>${Math.round(rect.height)}</span>
+      <span class="yw-inspector-size-x">px</span>
     </div>
     <div class="yw-inspector-body">
-      <div class="yw-inspector-grid">
-        <div class="yw-prop-item"><span class="yw-prop-label">Width</span><span class="yw-prop-val">${Math.round(rect.width)}px</span></div>
-        <div class="yw-prop-item"><span class="yw-prop-label">Height</span><span class="yw-prop-val">${Math.round(rect.height)}px</span></div>
-        <div class="yw-prop-item"><span class="yw-prop-label">Margin</span><span class="yw-prop-val">${style.margin}</span></div>
-        <div class="yw-prop-item"><span class="yw-prop-label">Padding</span><span class="yw-prop-val">${style.padding}</span></div>
-        <div class="yw-prop-item"><span class="yw-prop-label">Color</span><span class="yw-prop-val"><span class="yw-color-swatch" style="background:${style.color}"></span>${style.color}</span></div>
-        <div class="yw-prop-item"><span class="yw-prop-label">Background</span><span class="yw-prop-val"><span class="yw-color-swatch" style="background:${style.backgroundColor}"></span>${style.backgroundColor}</span></div>
-        <div class="yw-prop-item"><span class="yw-prop-label">Font Size</span><span class="yw-prop-val">${style.fontSize}</span></div>
-        <div class="yw-prop-item"><span class="yw-prop-label">Font Family</span><span class="yw-prop-val" title="${style.fontFamily}">${style.fontFamily.split(',')[0].replace(/['"]/g, '')}</span></div>
-      </div>
+      ${row('display', display)}
+      ${row('position', pos)}
+      ${divider()}
+      ${row('margin', margin)}
+      ${row('padding', padding)}
+      ${divider()}
+      ${colorRow('color', color)}
+      ${colorRow('background', bg)}
+      ${divider()}
+      ${row('font', fSize + ' / ' + fWeight)}
+      ${row('family', fFamily)}
+      ${row('line-h', lHeight)}
+      ${radius && radius !== '0px' ? row('radius', radius) : ''}
+      ${opacity && opacity !== '1' ? row('opacity', opacity) : ''}
+      ${zIndex && zIndex !== 'auto' ? row('z-index', zIndex) : ''}
     </div>
   `;
+
+  // ── Position panel near the element, clamped to viewport ──
+  const PW = 260;
+  const PH = inspectorPanel.scrollHeight || 220;
+  const MARGIN = 12;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+
+  // Prefer: below the element, left-aligned to it
+  let top  = rect.bottom + MARGIN;
+  let left = rect.left;
+
+  // Flip above if no room below
+  if (top + PH > vh - MARGIN) {
+    top = rect.top - PH - MARGIN;
+  }
+  // If still off-screen above, pin to top
+  if (top < MARGIN) top = MARGIN;
+
+  // Clamp horizontally
+  if (left + PW > vw - MARGIN) left = vw - PW - MARGIN;
+  if (left < MARGIN) left = MARGIN;
+
+  inspectorPanel.style.top  = top  + 'px';
+  inspectorPanel.style.left = left + 'px';
 }
 
 function updateSelectedOverlay(el) {

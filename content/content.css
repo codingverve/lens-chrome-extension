@@ -33,12 +33,15 @@
   position: fixed;
   pointer-events: none;
   z-index: 2147483640;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 4px;
-  background: rgba(0, 0, 0, 0.02);
-  transition: all 0.1s ease;
+  outline: 2px solid #4F8EF7;
+  outline-offset: 0px;
+  background: rgba(79, 142, 247, 0.06);
+  border-radius: 0;
+  transition: top 0.05s ease, left 0.05s ease, width 0.05s ease, height 0.05s ease;
+  box-shadow: none;
 }
 
+/* Margin region — orange like Chrome DevTools */
 .yw-margin-overlay {
   position: fixed;
   pointer-events: none;
@@ -47,6 +50,7 @@
   box-sizing: border-box;
 }
 
+/* Padding region — green like Chrome DevTools */
 .yw-padding-overlay {
   position: fixed;
   pointer-events: none;
@@ -55,14 +59,15 @@
   box-sizing: border-box;
 }
 
+/* Selected overlay — solid blue ring */
 .yw-selected-overlay {
   position: fixed;
   pointer-events: none;
   z-index: 2147483641;
-  border: 1px solid #000000;
-  border-radius: 4px;
-  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.06);
-  background: rgba(0, 0, 0, 0.03);
+  outline: 2px solid #2563EB;
+  outline-offset: 1px;
+  background: rgba(37, 99, 235, 0.04);
+  border-radius: 0;
 }
 
 /* ---- Element Label Badge ---- */
@@ -288,66 +293,160 @@
 /* ---- Hover Inspector Panel ---- */
 #yw-inspector-panel {
   position: fixed;
-  z-index: 2147483645;
-  width: 280px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
+  z-index: 2147483647;
+  width: 260px;
+  background: #FFFFFF;
   border-radius: 8px;
-  outline: 1px solid #F5F5F5;
-  box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.06), 0 8px 24px rgba(0, 0, 0, 0.08);
-  font-family: 'Inter', sans-serif;
-  color: #000000;
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 10px 28px -4px rgba(0,0,0,0.12);
+  font-family: 'Inter', -apple-system, sans-serif !important;
+  font-size: 12px !important;
+  color: #111827 !important;
   overflow: hidden;
-  transition: opacity 0.15s ease, transform 0.15s ease, top 0.1s ease, left 0.1s ease;
-  transform-origin: top left;
+  pointer-events: none;
+  /* No transition on top/left — follow cursor instantly */
+  transition: opacity 0.12s ease;
 }
 
 #yw-inspector-panel.yw-hidden {
-  opacity: 0;
+  opacity: 0 !important;
   pointer-events: none;
-  transform: scale(0.95);
 }
 
+/* ── Header row: tag badge + selector path ── */
 .yw-inspector-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border-bottom: 1px solid #F5F5F5;
-  background: #FAFAFA;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 8px 10px !important;
+  background: #F9FAFB !important;
+  border-bottom: 1px solid #E5E7EB !important;
 }
 
-.yw-inspector-header .yw-tag {
-  background: #E5E5E5;
-  color: #000000;
-  font-size: 10px;
-  font-weight: 600;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-family: 'JetBrains Mono', monospace;
+.yw-inspector-tag {
+  flex-shrink: 0 !important;
+  background: #1E293B !important;
+  color: #E2E8F0 !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.04em !important;
+  padding: 2px 6px !important;
+  border-radius: 3px !important;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+  line-height: 1.4 !important;
+  white-space: nowrap !important;
 }
 
-.yw-inspector-header .yw-selector {
-  flex: 1;
-  font-size: 11px;
-  font-family: 'JetBrains Mono', monospace;
-  color: #8F8F8F;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.yw-inspector-selector {
+  flex: 1 !important;
+  font-size: 10px !important;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+  color: #6B7280 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  line-height: 1.4 !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
 }
 
+/* ── Size badge (width × height) shown right below header ── */
+.yw-inspector-size {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  padding: 5px 10px !important;
+  background: #F3F4F6 !important;
+  border-bottom: 1px solid #E5E7EB !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  color: #374151 !important;
+  letter-spacing: 0.02em !important;
+}
+.yw-inspector-size-x {
+  color: #9CA3AF !important;
+  font-size: 10px !important;
+}
+
+/* ── Property rows ── */
 .yw-inspector-body {
-  padding: 12px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  padding: 6px 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
 }
 
-.yw-inspector-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px 12px;
+.yw-inspector-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 4px 10px !important;
+  gap: 8px !important;
+  min-height: 24px !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+.yw-inspector-row:hover {
+  background: #F9FAFB !important;
+}
+
+.yw-inspector-key {
+  font-size: 11px !important;
+  color: #9CA3AF !important;
+  font-weight: 400 !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  font-family: 'Inter', sans-serif !important;
+}
+
+.yw-inspector-val {
+  font-size: 11px !important;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+  color: #111827 !important;
+  font-weight: 500 !important;
+  text-align: right !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  max-width: 140px !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+.yw-inspector-color-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+}
+
+.yw-inspector-swatch {
+  display: inline-block !important;
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 2px !important;
+  border: 1px solid rgba(0,0,0,0.12) !important;
+  flex-shrink: 0 !important;
+  vertical-align: middle !important;
+}
+
+.yw-inspector-divider {
+  height: 1px !important;
+  background: #F3F4F6 !important;
+  margin: 3px 10px !important;
+}
+
+/* Suppress any host-page :root variables leaking into our panel */
+#yw-inspector-panel * {
+  box-sizing: border-box !important;
+  line-height: 1.4 !important;
 }
 
 .yw-prop-item {
