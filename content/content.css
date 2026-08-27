@@ -1011,10 +1011,14 @@
   width: 100%;
   height: 4px;
   border-radius: 100px;
-  background: #E5E7EB;
+  /* Track fill: indigo up to thumb, grey after */
+  background: linear-gradient(
+    to right,
+    #6366F1 var(--val, 0%),
+    #E5E7EB var(--val, 0%)
+  );
   outline: none;
   cursor: pointer;
-  transition: background 0.15s;
 }
 .yw-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
@@ -1037,10 +1041,10 @@
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
   border: 2px solid #FFFFFF;
 }
-.yw-slider::-webkit-slider-runnable-track {
+.yw-slider::-moz-range-track {
   height: 4px;
   border-radius: 100px;
-  background: linear-gradient(to right, #6366F1 var(--val, 50%), #E5E7EB var(--val, 50%));
+  background: #E5E7EB;
 }
 
 /* Color row: swatch circle + hex code */

@@ -1009,14 +1009,26 @@ function initGridControls() {
 
   renderPageGrid();
 
+  // Keep the track gradient in sync with the thumb position
+  const syncSliderFill = (el) => {
+    const min = Number(el.min) || 0;
+    const max = Number(el.max) || 100;
+    const val = Number(el.value);
+    const pct = ((val - min) / (max - min) * 100).toFixed(1) + '%';
+    el.style.setProperty('--val', pct);
+  };
+
   const bindSlider = (id, prop, suffix = '') => {
     const el = document.getElementById(id);
     const valEl = document.getElementById(id + '-val');
     if (!el) return;
+    // Set correct fill immediately on open
+    syncSliderFill(el);
     el.addEventListener('input', (e) => {
-      let val = Number(e.target.value);
+      const val = Number(e.target.value);
       gridState[prop] = val;
       if (valEl) valEl.textContent = val + suffix;
+      syncSliderFill(el);
       renderPageGrid();
     });
   };
