@@ -238,6 +238,9 @@ function createOverlayElements() {
   });
 }
 
+// Cache to skip redundant getComputedStyle + DOM rebuild on the same element
+let _lastInspectedEl = null;
+
 function positionOverlayFixed(overlay, el) {
   if (!el) { overlay.style.display = 'none'; return; }
   const rect = el.getBoundingClientRect();
@@ -277,149 +280,121 @@ function updateInspectorPanel(el) {
   if (!inspectorPanel) return;
   inspectorPanel.classList.remove('yw-hidden');
 
-  const style = window.getComputedStyle(el);
+  // Skip the heavy getComputedStyle + innerHTML rebuild if same element
+  const isSameEl = el === _lastInspectedEl;
+  _lastInspectedEl = el;
+
   const rect = el.getBoundingClientRect();
+  const style = isSameEl ? null : window.getComputedStyle(el);
 
-  // ── Margin overlay ──────────────────────────────────
-  const mt = parseFloat(style.marginTop) || 0;
-  const mr = parseFloat(style.marginRight) || 0;
-  const mb = parseFloat(style.marginBottom) || 0;
-  const ml = parseFloat(style.marginLeft) || 0;
-  if (mt || mr || mb || ml) {
-    marginOverlay.style.display = 'block';
-    marginOverlay.style.top    = (rect.top  - mt) + 'px';
-    marginOverlay.style.left   = (rect.left - ml) + 'px';
-    marginOverlay.style.width  = (rect.width  + ml + mr) + 'px';
-    marginOverlay.style.height = (rect.height + mt + mb) + 'px';
-    marginOverlay.style.borderWidth = `${mt}px ${mr}px ${mb}px ${ml}px`;
-    marginOverlay.style.borderStyle = 'solid';
-    marginOverlay.style.borderColor = 'rgba(246, 178, 107, 0.5)';
-  } else {
-    marginOverlay.style.display = 'none';
+  if (!isSameEl) {
+    // ── Margin overlay ──────────────────────────────────
+    const mt = parseFloat(style.marginTop) || 0;
+    const mr = parseFloat(style.marginRight) || 0;
+    const mb = parseFloat(style.marginBottom) || 0;
+    const ml = parseFloat(style.marginLeft) || 0;
+    if (mt || mr || mb || ml) {
+      marginOverlay.style.display = 'block';
+      marginOverlay.style.top    = (rect.top  - mt) + 'px';
+      marginOverlay.style.left   = (rect.left - ml) + 'px';
+      marginOverlay.style.width  = (rect.width  + ml + mr) + 'px';
+      marginOverlay.style.height = (rect.height + mt + mb) + 'px';
+      marginOverlay.style.borderWidth = `${mt}px ${mr}px ${mb}px ${ml}px`;
+      marginOverlay.style.borderStyle = 'solid';
+      marginOverlay.style.borderColor = 'rgba(246, 178, 107, 0.5)';
+    } else {
+      marginOverlay.style.display = 'none';
+    }
+
+    // ── Padding overlay ───────────────────────────────
+    const pt = parseFloat(style.paddingTop) || 0;
+    const pr = parseFloat(style.paddingRight) || 0;
+    const pb = parseFloat(style.paddingBottom) || 0;
+    const pl = parseFloat(style.paddingLeft) || 0;
+    if (pt || pr || pb || pl) {
+      paddingOverlay.style.display = 'block';
+      paddingOverlay.style.top    = rect.top  + 'px';
+      paddingOverlay.style.left   = rect.left + 'px';
+      paddingOverlay.style.width  = rect.width  + 'px';
+      paddingOverlay.style.height = rect.height + 'px';
+      paddingOverlay.style.borderWidth = `${pt}px ${pr}px ${pb}px ${pl}px`;
+      paddingOverlay.style.borderStyle = 'solid';
+      paddingOverlay.style.borderColor = 'rgba(126, 211, 138, 0.55)';
+    } else {
+      paddingOverlay.style.display = 'none';
+    }
+
+    // ── Build inspector card HTML ──────────────────────
+    const selector = buildSelector(el);
+    const tag = el.tagName.toLowerCase();
+    const cls = Array.from(el.classList).filter(c => !c.startsWith('yw-')).slice(0, 2).join('.');
+    const displaySel = selector.length > 38 ? '…' + selector.slice(-38) : selector;
+
+    const fmt = (v) => {
+      if (!v) return '—';
+      v = v.trim();
+      if (/^(0px\s*)+$/.test(v)) return '0';
+      return v;
+    };
+    const row = (key, val) =>
+      `<div class="yw-inspector-row"><span class="yw-inspector-key">${key}</span><span class="yw-inspector-val">${escapeHtml(String(val))}</span></div>`;
+    const colorRow = (key, color) =>
+      `<div class="yw-inspector-row"><span class="yw-inspector-key">${key}</span><span class="yw-inspector-color-row"><span class="yw-inspector-swatch" style="background:${color}"></span><span class="yw-inspector-val">${escapeHtml(color)}</span></span></div>`;
+    const divider = () => '<div class="yw-inspector-divider"></div>';
+
+    const fSize   = style.fontSize || '';
+    const fFamily = (style.fontFamily || '').split(',')[0].replace(/['"]/g,'').trim();
+    const fWeight = style.fontWeight || '';
+    const lHeight = style.lineHeight || '';
+    const display = style.display || '';
+    const pos     = style.position || '';
+    const radius  = style.borderRadius || '';
+    const opacity = style.opacity || '';
+    const zIndex  = style.zIndex || '';
+
+    inspectorPanel.innerHTML = `
+      <div class="yw-inspector-header">
+        <span class="yw-inspector-tag">${escapeHtml(tag.toUpperCase())}${cls ? '.' + escapeHtml(cls) : ''}</span>
+        <span class="yw-inspector-selector" title="${escapeHtml(selector)}">${escapeHtml(displaySel)}</span>
+      </div>
+      <div class="yw-inspector-size">
+        <span>${Math.round(rect.width)}</span>
+        <span class="yw-inspector-size-x">×</span>
+        <span>${Math.round(rect.height)}</span>
+        <span class="yw-inspector-size-x">px</span>
+      </div>
+      <div class="yw-inspector-body">
+        ${row('display', display)}
+        ${row('position', pos)}
+        ${divider()}
+        ${row('margin', fmt(style.margin))}
+        ${row('padding', fmt(style.padding))}
+        ${divider()}
+        ${colorRow('color', style.color || '')}
+        ${colorRow('background', style.backgroundColor || '')}
+        ${divider()}
+        ${row('font', fSize + ' / ' + fWeight)}
+        ${row('family', fFamily)}
+        ${row('line-h', lHeight)}
+        ${radius && radius !== '0px' ? row('radius', radius) : ''}
+        ${opacity && opacity !== '1' ? row('opacity', opacity) : ''}
+        ${zIndex && zIndex !== 'auto' ? row('z-index', zIndex) : ''}
+      </div>
+    `;
   }
 
-  // ── Padding overlay ───────────────────────────────
-  const pt = parseFloat(style.paddingTop) || 0;
-  const pr = parseFloat(style.paddingRight) || 0;
-  const pb = parseFloat(style.paddingBottom) || 0;
-  const pl = parseFloat(style.paddingLeft) || 0;
-  if (pt || pr || pb || pl) {
-    paddingOverlay.style.display = 'block';
-    paddingOverlay.style.top    = rect.top  + 'px';
-    paddingOverlay.style.left   = rect.left + 'px';
-    paddingOverlay.style.width  = rect.width  + 'px';
-    paddingOverlay.style.height = rect.height + 'px';
-    paddingOverlay.style.borderWidth = `${pt}px ${pr}px ${pb}px ${pl}px`;
-    paddingOverlay.style.borderStyle = 'solid';
-    paddingOverlay.style.borderColor = 'rgba(126, 211, 138, 0.55)';
-  } else {
-    paddingOverlay.style.display = 'none';
-  }
-
-  // ── Helpers ─────────────────────────────────────
-  const selector = buildSelector(el);
-  const tag = el.tagName.toLowerCase();
-  const cls = Array.from(el.classList).filter(c => !c.startsWith('yw-')).slice(0, 2).join('.');
-  const displaySel = selector.length > 38 ? '…' + selector.slice(-38) : selector;
-
-  // Compact a computed value: trim trailing zeros from colours, shorten 0px
-  function fmt(v) {
-    if (!v) return '—';
-    v = v.trim();
-    // '0px 0px 0px 0px' → '0'
-    if (/^(0px\s*)+$/.test(v)) return '0';
-    return v;
-  }
-
-  function swatchRow(color, label) {
-    return `<span class="yw-inspector-color-row">
-      <span class="yw-inspector-swatch" style="background:${color}"></span>
-      <span class="yw-inspector-val">${escapeHtml(label)}</span>
-    </span>`;
-  }
-
-  function row(key, val) {
-    return `<div class="yw-inspector-row">
-      <span class="yw-inspector-key">${key}</span>
-      <span class="yw-inspector-val">${escapeHtml(String(val))}</span>
-    </div>`;
-  }
-
-  function colorRow(key, color) {
-    return `<div class="yw-inspector-row">
-      <span class="yw-inspector-key">${key}</span>
-      ${swatchRow(color, color)}
-    </div>`;
-  }
-
-  function divider() {
-    return '<div class="yw-inspector-divider"></div>';
-  }
-
-  const fSize  = style.fontSize  || '';
-  const fFamily = (style.fontFamily || '').split(',')[0].replace(/['"]/g,'').trim();
-  const fWeight = style.fontWeight || '';
-  const lHeight = style.lineHeight || '';
-  const display = style.display   || '';
-  const pos     = style.position  || '';
-  const margin  = fmt(style.margin);
-  const padding = fmt(style.padding);
-  const color   = style.color || '';
-  const bg      = style.backgroundColor || '';
-  const border  = style.border || '';
-  const radius  = style.borderRadius || '';
-  const opacity = style.opacity || '';
-  const zIndex  = style.zIndex || '';
-
-  inspectorPanel.innerHTML = `
-    <div class="yw-inspector-header">
-      <span class="yw-inspector-tag">${escapeHtml(tag.toUpperCase())}${cls ? '.' + escapeHtml(cls) : ''}</span>
-      <span class="yw-inspector-selector" title="${escapeHtml(selector)}">${escapeHtml(displaySel)}</span>
-    </div>
-    <div class="yw-inspector-size">
-      <span>${Math.round(rect.width)}</span>
-      <span class="yw-inspector-size-x">×</span>
-      <span>${Math.round(rect.height)}</span>
-      <span class="yw-inspector-size-x">px</span>
-    </div>
-    <div class="yw-inspector-body">
-      ${row('display', display)}
-      ${row('position', pos)}
-      ${divider()}
-      ${row('margin', margin)}
-      ${row('padding', padding)}
-      ${divider()}
-      ${colorRow('color', color)}
-      ${colorRow('background', bg)}
-      ${divider()}
-      ${row('font', fSize + ' / ' + fWeight)}
-      ${row('family', fFamily)}
-      ${row('line-h', lHeight)}
-      ${radius && radius !== '0px' ? row('radius', radius) : ''}
-      ${opacity && opacity !== '1' ? row('opacity', opacity) : ''}
-      ${zIndex && zIndex !== 'auto' ? row('z-index', zIndex) : ''}
-    </div>
-  `;
-
-  // ── Position panel near the element, clamped to viewport ──
+  // ── Position panel near the element (always runs, even for same el) ──
   const PW = 260;
   const PH = inspectorPanel.scrollHeight || 220;
   const MARGIN = 12;
   const vw = window.innerWidth;
   const vh = window.innerHeight;
 
-  // Prefer: below the element, left-aligned to it
   let top  = rect.bottom + MARGIN;
   let left = rect.left;
 
-  // Flip above if no room below
-  if (top + PH > vh - MARGIN) {
-    top = rect.top - PH - MARGIN;
-  }
-  // If still off-screen above, pin to top
+  if (top + PH > vh - MARGIN) top = rect.top - PH - MARGIN;
   if (top < MARGIN) top = MARGIN;
-
-  // Clamp horizontally
   if (left + PW > vw - MARGIN) left = vw - PW - MARGIN;
   if (left < MARGIN) left = MARGIN;
 
@@ -437,15 +412,27 @@ function onScroll() {
   if (currentSelected) updateSelectedOverlay(currentSelected);
 }
 
+// rAF handle — ensures we run at most once per animation frame
+let _rafPending = false;
+let _rafTarget = null;
+
 function onMouseMove(e) {
-  // If the cursor is over the inspector panel, don't update — keep the
-  // element frozen so the user can read/copy from the panel freely.
   if (isPaused || isHoverDisabled || isInspectorHovered) return;
   const el = e.target;
   if (isSkippable(el) || el === currentHovered) return;
-  currentHovered = el;
-  updateHoverOverlay(el);
-  if (typeof updateMeasurements === 'function') updateMeasurements();
+
+  // Throttle to one update per animation frame for smooth, efficient rendering
+  _rafTarget = el;
+  if (_rafPending) return;
+  _rafPending = true;
+  requestAnimationFrame(() => {
+    _rafPending = false;
+    if (!_rafTarget || isPaused || isHoverDisabled || isInspectorHovered) return;
+    if (_rafTarget === currentHovered) return;
+    currentHovered = _rafTarget;
+    updateHoverOverlay(currentHovered);
+    if (typeof updateMeasurements === 'function') updateMeasurements();
+  });
 }
 
 function onOverlayClick(e) {
@@ -508,7 +495,10 @@ function highlightElement(el) {
 
 function clearHighlight() {
   hoverOverlay.style.display = 'none';
-  elementLabel.style.display = 'none';
+  if (inspectorPanel) inspectorPanel.classList.add('yw-hidden');
+  if (marginOverlay) marginOverlay.style.display = 'none';
+  if (paddingOverlay) paddingOverlay.style.display = 'none';
+  _lastInspectedEl = null;
 }
 
 function startOverlay() {
@@ -646,18 +636,27 @@ let activeToolId = 'moveSelect';
 
 function setActiveTool(toolId) {
   activeToolId = toolId;
-  // Reflect in the overlay: when "comments" or inspector tool is active,
-  // re-enable hover/click. Otherwise let the tool control it.
   if (toolId === 'moveSelect') {
     isHoverDisabled = false;
     isPaused = false;
     clearHighlight();
-  } else {
-    // All other tools pause the hover inspector so the toolbar can't inspect itself
-    // and so UX is clear about which mode is active.
+  } else if (toolId === 'comments') {
+    // Comments mode: hover still active (user needs to hover to pick element)
+    isHoverDisabled = false;
+    isPaused = false;
     clearHighlight();
     clearSelection();
     currentHovered = null;
+  } else {
+    // Grid / Settings / CopyAll — pause everything, inspector must not fire
+    isPaused = true;
+    isHoverDisabled = true;
+    clearHighlight();
+    clearSelection();
+    currentHovered = null;
+    if (inspectorPanel) inspectorPanel.classList.add('yw-hidden');
+    if (marginOverlay) marginOverlay.style.display = 'none';
+    if (paddingOverlay) paddingOverlay.style.display = 'none';
   }
 
   // Update button visual state
