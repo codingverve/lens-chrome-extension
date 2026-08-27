@@ -898,11 +898,186 @@
   width: 14px;
   height: 14px;
 }
-  font-size: 14px;
-  font-weight: 500;
 }
 
-/* ---- Inspector Mode Styles ---- */
+/* ---- Grid Layout Overlay ---- */
+#yw-page-grid {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 2147483636;
+  overflow: hidden;
+}
+
+/* ---- Grid Settings Popover ---- */
+.yw-grid-popover {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  padding: 14px;
+  width: 220px;
+  font-family: 'Inter', sans-serif;
+}
+.yw-toolbar-btn.yw-popover-open .yw-grid-popover {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+  pointer-events: auto;
+}
+
+.yw-grid-toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.yw-grid-toggle-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Modern pill toggle switch */
+.yw-toggle-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+.yw-toggle-switch input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.yw-toggle-track {
+  display: flex;
+  align-items: center;
+  width: 34px;
+  height: 18px;
+  background: #D1D5DB;
+  border-radius: 100px;
+  transition: background 0.2s;
+  flex-shrink: 0;
+  position: relative;
+}
+.yw-toggle-thumb {
+  position: absolute;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  background: #FFFFFF;
+  border-radius: 50%;
+  transition: left 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.yw-toggle-switch input:checked + .yw-toggle-track {
+  background: #6366F1;
+}
+.yw-toggle-switch input:checked + .yw-toggle-track .yw-toggle-thumb {
+  left: 18px;
+}
+
+.yw-grid-divider {
+  height: 1px;
+  background: #F3F4F6;
+  margin: 0 -4px;
+}
+
+.yw-grid-setting {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.yw-grid-setting-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: #6B7280;
+  font-weight: 500;
+}
+.yw-setting-val {
+  font-size: 11px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Custom slider — thin track, rounded thumb */
+.yw-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 100px;
+  background: #E5E7EB;
+  outline: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.yw-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #6366F1;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  border: 2px solid #FFFFFF;
+  margin-top: -5px;
+}
+.yw-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #6366F1;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  border: 2px solid #FFFFFF;
+}
+.yw-slider::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 100px;
+  background: linear-gradient(to right, #6366F1 var(--val, 50%), #E5E7EB var(--val, 50%));
+}
+
+/* Color row: swatch circle + hex code */
+.yw-color-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.yw-color-swatch-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 2px solid rgba(0,0,0,0.08);
+  cursor: pointer;
+  flex-shrink: 0;
+  display: block;
+  transition: border-color 0.15s, transform 0.1s;
+}
+.yw-color-swatch-btn:hover {
+  border-color: rgba(0,0,0,0.2);
+  transform: scale(1.08);
+}
+.yw-color-hidden {
+  width: 0 !important;
+  height: 0 !important;
+  opacity: 0 !important;
+  position: absolute !important;
+  pointer-events: none !important;
+}
+.yw-color-hex {
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.04em;
+}
+
 .yw-inspector-body {
   padding: 12px 16px;
   display: flex;

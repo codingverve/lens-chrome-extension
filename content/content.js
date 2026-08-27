@@ -736,30 +736,66 @@ function createToolbarWidget() {
       <button class="yw-toolbar-btn yw-has-popover" id="yw-grid-btn" data-tool="grid" data-tooltip="Grid">
         ${Icons.grid}
         <div class="yw-settings-popover yw-grid-popover">
+
+          <!-- Toggle Row -->
           <div class="yw-grid-toggle-row">
-            <span>Enable Grid</span>
-            <input type="checkbox" id="yw-grid-active-chk" style="cursor:pointer;" />
+            <span class="yw-grid-toggle-label">Grid</span>
+            <label class="yw-toggle-switch">
+              <input type="checkbox" id="yw-grid-active-chk" />
+              <span class="yw-toggle-track"><span class="yw-toggle-thumb"></span></span>
+            </label>
           </div>
+
+          <div class="yw-grid-divider"></div>
+
+          <!-- Columns slider -->
           <div class="yw-grid-setting">
-            <label><span>Columns</span><span class="yw-setting-val" id="yw-grid-cols-val">12</span></label>
-            <input type="range" id="yw-grid-cols" min="1" max="24" value="12" />
+            <div class="yw-grid-setting-header">
+              <span>Columns</span>
+              <span class="yw-setting-val" id="yw-grid-cols-val">12</span>
+            </div>
+            <input type="range" id="yw-grid-cols" min="1" max="24" value="12" class="yw-slider" />
           </div>
+
+          <!-- Gutter slider -->
           <div class="yw-grid-setting">
-            <label><span>Gutter (px)</span><span class="yw-setting-val" id="yw-grid-gap-val">24</span></label>
-            <input type="number" id="yw-grid-gap" value="24" min="0" />
+            <div class="yw-grid-setting-header">
+              <span>Gutter</span>
+              <span class="yw-setting-val" id="yw-grid-gap-val">24px</span>
+            </div>
+            <input type="range" id="yw-grid-gap" min="0" max="80" value="24" class="yw-slider" />
           </div>
+
+          <!-- Margin slider -->
           <div class="yw-grid-setting">
-            <label><span>Margin (px)</span><span class="yw-setting-val" id="yw-grid-margin-val">24</span></label>
-            <input type="number" id="yw-grid-margin" value="24" min="0" />
+            <div class="yw-grid-setting-header">
+              <span>Margin</span>
+              <span class="yw-setting-val" id="yw-grid-margin-val">24px</span>
+            </div>
+            <input type="range" id="yw-grid-margin" min="0" max="120" value="24" class="yw-slider" />
           </div>
+
+          <div class="yw-grid-divider"></div>
+
+          <!-- Color swatch + hidden picker -->
           <div class="yw-grid-setting">
-            <label><span>Color</span></label>
-            <input type="color" id="yw-grid-color" value="#ef4444" style="width:100%;height:28px;cursor:pointer;padding:0;background:transparent;border:none;" />
+            <div class="yw-grid-setting-header"><span>Color</span></div>
+            <div class="yw-color-row">
+              <label class="yw-color-swatch-btn" id="yw-grid-color-swatch" style="background:#6366F1" for="yw-grid-color"></label>
+              <input type="color" id="yw-grid-color" value="#6366F1" class="yw-color-hidden" />
+              <span class="yw-color-hex" id="yw-grid-color-hex">#6366F1</span>
+            </div>
           </div>
+
+          <!-- Opacity slider -->
           <div class="yw-grid-setting">
-            <label><span>Opacity (%)</span><span class="yw-setting-val" id="yw-grid-opacity-val">10</span></label>
-            <input type="range" id="yw-grid-opacity" min="0" max="100" value="10" />
+            <div class="yw-grid-setting-header">
+              <span>Opacity</span>
+              <span class="yw-setting-val" id="yw-grid-opacity-val">12%</span>
+            </div>
+            <input type="range" id="yw-grid-opacity" min="0" max="100" value="12" class="yw-slider" />
           </div>
+
         </div>
       </button>
 
@@ -951,77 +987,98 @@ function closeAllPopovers() {
    ============================================================ */
 
 let pageGridEl = null;
-let gridState = { active: false, cols: 12, gap: 24, margin: 24, color: '#ef4444', opacity: 10 };
+let gridState = { active: false, cols: 12, gap: 24, margin: 24, color: '#6366F1', opacity: 12 };
 
 function initGridControls() {
   if (pageGridEl) return;
   pageGridEl = document.createElement('div');
   pageGridEl.id = 'yw-page-grid';
-  pageGridEl.style.display = gridState.active ? 'flex' : 'none';
+  pageGridEl.style.display = gridState.active ? 'block' : 'none';
   document.body.appendChild(pageGridEl);
 
   renderPageGrid();
 
-  const bindInput = (id, prop, type = 'number') => {
+  const bindSlider = (id, prop, suffix = '') => {
     const el = document.getElementById(id);
     const valEl = document.getElementById(id + '-val');
     if (!el) return;
     el.addEventListener('input', (e) => {
-      let val = e.target.value;
-      if (type === 'checkbox') val = e.target.checked;
-      else if (type === 'number') val = Number(val);
-      
+      let val = Number(e.target.value);
       gridState[prop] = val;
-      if (valEl) valEl.textContent = val;
-      if (type === 'checkbox') pageGridEl.style.display = gridState.active ? 'flex' : 'none';
+      if (valEl) valEl.textContent = val + suffix;
       renderPageGrid();
     });
   };
 
-  bindInput('yw-grid-active-chk', 'active', 'checkbox');
-  bindInput('yw-grid-cols', 'cols', 'number');
-  bindInput('yw-grid-gap', 'gap', 'number');
-  bindInput('yw-grid-margin', 'margin', 'number');
-  bindInput('yw-grid-opacity', 'opacity', 'number');
-  bindInput('yw-grid-color', 'color', 'string');
+  const bindCheckbox = (id, prop) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('change', (e) => {
+      gridState[prop] = e.target.checked;
+      pageGridEl.style.display = gridState.active ? 'block' : 'none';
+    });
+  };
+
+  const bindColor = (id) => {
+    const el = document.getElementById(id);
+    const swatch = document.getElementById('yw-grid-color-swatch');
+    const hex = document.getElementById('yw-grid-color-hex');
+    if (!el) return;
+    el.addEventListener('input', (e) => {
+      gridState.color = e.target.value;
+      if (swatch) swatch.style.background = e.target.value;
+      if (hex) hex.textContent = e.target.value.toUpperCase();
+      renderPageGrid();
+    });
+    // Clicking the swatch triggers the hidden color input
+    if (swatch) swatch.addEventListener('click', () => el.click());
+  };
+
+  bindCheckbox('yw-grid-active-chk', 'active');
+  bindSlider('yw-grid-cols', 'cols');
+  bindSlider('yw-grid-gap', 'gap', 'px');
+  bindSlider('yw-grid-margin', 'margin', 'px');
+  bindSlider('yw-grid-opacity', 'opacity', '%');
+  bindColor('yw-grid-color');
 }
 
 function hexToRgb(hex) {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '239, 68, 68';
+  return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '99, 102, 241';
 }
 
 function renderPageGrid() {
   if (!pageGridEl) return;
-  pageGridEl.innerHTML = '<div id="yw-page-grid-inner"></div>';
-  const inner = pageGridEl.firstElementChild;
+  // Clear existing columns
+  pageGridEl.innerHTML = '';
 
-  inner.style.cssText = `
-    display: grid;
-    width: 100%;
-    height: 100vh;
-    grid-template-columns: repeat(${gridState.cols}, 1fr);
-    gap: 0;
-    padding: 0 ${gridState.margin}px;
-    box-sizing: border-box;
-  `;
-
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const margin = Math.max(0, gridState.margin);
+  const gap = Math.max(0, gridState.gap);
+  const cols = Math.max(1, gridState.cols);
+  const alpha = gridState.opacity / 100;
   const rgb = hexToRgb(gridState.color);
-  const colAlpha = gridState.opacity / 100;
-  for (let i = 0; i < gridState.cols; i++) {
+
+  // Compute exact column width using pixel math (not CSS grid)
+  // This avoids stacking-context bugs on sites with transforms/filters
+  const totalInnerWidth = vw - margin * 2;
+  const totalGapWidth = gap * (cols - 1);
+  const colWidth = (totalInnerWidth - totalGapWidth) / cols;
+
+  for (let i = 0; i < cols; i++) {
     const col = document.createElement('div');
-    col.className = 'yw-grid-col';
+    const left = margin + i * (colWidth + gap);
     col.style.cssText = `
-      background: rgba(${rgb}, ${colAlpha});
-      height: 100%;
-      position: relative;
+      position: absolute;
+      top: 0;
+      left: ${left}px;
+      width: ${Math.max(0, colWidth)}px;
+      height: ${vh}px;
+      background: rgba(${rgb}, ${alpha});
+      pointer-events: none;
     `;
-    // Add a right-edge guide line between columns
-    if (i < gridState.cols - 1 && gridState.gap > 0) {
-      col.style.marginRight = (gridState.gap / 2) + 'px';
-      col.style.marginLeft = i === 0 ? '0' : (gridState.gap / 2) + 'px';
-    }
-    inner.appendChild(col);
+    pageGridEl.appendChild(col);
   }
 }
 
