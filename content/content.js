@@ -11,6 +11,32 @@
 
 const YW_STORAGE_KEY = 'yw_annotations';
 
+/**
+ * Returns true when the current page is a local/dev URL:
+ *   - localhost / 127.0.0.1 / ::1
+ *   - Private IP ranges: 10.x, 172.16-31.x, 192.168.x
+ *   - Any hostname ending in .local
+ *   - file:// protocol
+ *   - Custom ports on any of the above (e.g. :3000, :8080)
+ */
+function isLocalUrl() {
+  try {
+    const { hostname, protocol } = window.location;
+    if (protocol === 'file:') return true;
+    if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1') return true;
+    if (hostname.endsWith('.local')) return true;
+    // Private IP ranges
+    const parts = hostname.split('.').map(Number);
+    if (parts.length === 4 && !parts.some(isNaN)) {
+      const [a, b] = parts;
+      if (a === 10) return true;
+      if (a === 172 && b >= 16 && b <= 31) return true;
+      if (a === 192 && b === 168) return true;
+    }
+    return false;
+  } catch { return false; }
+}
+
 function buildSelector(element) {
   if (!element || element === document.body) return 'body';
   if (element.id && /^[a-zA-Z][a-zA-Z0-9_-]*$/.test(element.id)) {
@@ -667,38 +693,46 @@ function createToolbarWidget() {
   toolbarEl = document.createElement('div');
   toolbarEl.id = 'yw-toolbar';
 
+  const isLocal = isLocalUrl();
+
+  // Label items must exactly match visible buttons (for the scroller alignment)
+  const labelItems = [
+    'Select & Inspect',
+    ...(isLocal ? ['Add Comment', 'Copy All Annotations', 'Settings'] : []),
+    'Grid',
+  ];
+
+  const labelsHtml = labelItems.map(l => `<div class="yw-label-item">${l}</div>`).join('');
+
   toolbarEl.innerHTML = `
     <!-- Floating Label -->
     <div id="yw-floating-label" class="yw-floating-label">
       <div id="yw-label-scroller" class="yw-label-scroller">
-        <div class="yw-label-item">Select & Inspect</div>
-        <div class="yw-label-item">Add Comment</div>
-        <div class="yw-label-item">Copy All Annotations</div>
-        <div class="yw-label-item">Settings</div>
-        <div class="yw-label-item">Grid</div>
+        ${labelsHtml}
       </div>
     </div>
     <div id="yw-toolbar-items">
-      
+
       <!-- Sliding Hover Background -->
       <div id="yw-hover-bg" class="yw-hover-bg"></div>
 
-      <!-- Button 1: Move / Select -->
+      <!-- Button 1: Move / Select (always visible) -->
       <button class="yw-toolbar-btn yw-active-toggle" id="yw-move-btn" data-tool="moveSelect" data-tooltip="Select & Inspect">
         ${Icons.moveSelect}
       </button>
 
-      <!-- Button 2: Comments -->
+      ${isLocal ? `
+      <!-- Button 2: Comments (local only) -->
       <button class="yw-toolbar-btn" id="yw-comments-btn" data-tool="comments" data-tooltip="Add Comment">
         ${Icons.comments}
       </button>
 
-      <!-- Button 3: Copy All -->
+      <!-- Button 3: Copy All (local only) -->
       <button class="yw-toolbar-btn" id="yw-copy-btn" data-tool="copyAll" data-tooltip="Copy All Annotations">
         ${Icons.copyAll}
       </button>
 
-      <!-- Button 4: Settings (with popover) -->
+      <!-- Button 4: Settings (local only, with popover) -->
       <button class="yw-toolbar-btn yw-has-popover" id="yw-settings-btn" data-tool="settings" data-tooltip="Settings">
         ${Icons.settings}
         <div class="yw-settings-popover">
@@ -707,9 +741,9 @@ function createToolbarWidget() {
             <span>Clear comments on Copy All</span>
           </label>
         </div>
-      </button>
+      </button>` : ''}
 
-      <!-- Button 5: Grid (with popover) -->
+      <!-- Button 5: Grid (always visible, with popover) -->
       <button class="yw-toolbar-btn yw-has-popover" id="yw-grid-btn" data-tool="grid" data-tooltip="Grid">
         ${Icons.grid}
         <div class="yw-settings-popover yw-grid-popover">
@@ -752,63 +786,67 @@ function createToolbarWidget() {
     closeAllPopovers();
   });
 
-  // ── Button: Comments (toggle hover inspector) ──────────────────
-  // In "comments" mode the user clicks an element to annotate it.
-  document.getElementById('yw-comments-btn').addEventListener('click', () => {
-    const wasActive = activeToolId === 'comments';
-    closeAllPopovers();
-    if (wasActive) {
-      // Toggle off → go back to move/select
-      setActiveTool('moveSelect');
-      isHoverDisabled = false;
-      isPaused = false;
-    } else {
-      setActiveTool('comments');
-      isHoverDisabled = false;
-      isPaused = false;
-    }
-  });
+  // ── Button: Comments (local only) ────────────────────────────
+  const commentsBtn = document.getElementById('yw-comments-btn');
+  if (commentsBtn) {
+    commentsBtn.addEventListener('click', () => {
+      const wasActive = activeToolId === 'comments';
+      closeAllPopovers();
+      if (wasActive) {
+        setActiveTool('moveSelect');
+        isHoverDisabled = false;
+        isPaused = false;
+      } else {
+        setActiveTool('comments');
+        isHoverDisabled = false;
+        isPaused = false;
+      }
+    });
+  }
 
-  // ── Button: Copy All ───────────────────────────────────────────
-  document.getElementById('yw-copy-btn').addEventListener('click', async (e) => {
-    e.stopPropagation();
-    closeAllPopovers();
-    setActiveTool('copyAll');
-    const data = await loadAnnotations();
-    if (!data.comments.length) {
-      showToast('Nothing to copy yet!', 'error');
-      // Revert active state since no action happened
-      setActiveTool('moveSelect');
-      return;
-    }
-    copyToClipboard(exportJSON(data));
-    showToast('JSON copied to clipboard!', 'success');
-    const chk = document.getElementById('yw-delete-on-copy');
-    if (chk && chk.checked) {
-      data.comments = [];
-      await saveAnnotations(data);
-    }
-    // Brief highlight then revert
-    setTimeout(() => setActiveTool('moveSelect'), 800);
-  });
+  // ── Button: Copy All (local only) ─────────────────────────────
+  const copyBtn = document.getElementById('yw-copy-btn');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      closeAllPopovers();
+      setActiveTool('copyAll');
+      const data = await loadAnnotations();
+      if (!data.comments.length) {
+        showToast('Nothing to copy yet!', 'error');
+        setActiveTool('moveSelect');
+        return;
+      }
+      copyToClipboard(exportJSON(data));
+      showToast('JSON copied to clipboard!', 'success');
+      const chk = document.getElementById('yw-delete-on-copy');
+      if (chk && chk.checked) {
+        data.comments = [];
+        await saveAnnotations(data);
+      }
+      setTimeout(() => setActiveTool('moveSelect'), 800);
+    });
+  }
 
-  // ── Button: Settings ──────────────────────────────────────────
+  // ── Button: Settings (local only) ─────────────────────────────
   const settingsBtn = document.getElementById('yw-settings-btn');
-  settingsBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (e.target.closest('.yw-settings-popover')) return;
-    const wasOpen = settingsBtn.classList.contains('yw-popover-open');
-    closeAllPopovers();
-    if (!wasOpen) {
-      settingsBtn.classList.add('yw-popover-open');
-      setActiveTool('settings');
-      isPaused = true;
-      clearHighlight();
-    } else {
-      setActiveTool('moveSelect');
-      isPaused = false;
-    }
-  });
+  if (settingsBtn) {
+    settingsBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (e.target.closest('.yw-settings-popover')) return;
+      const wasOpen = settingsBtn.classList.contains('yw-popover-open');
+      closeAllPopovers();
+      if (!wasOpen) {
+        settingsBtn.classList.add('yw-popover-open');
+        setActiveTool('settings');
+        isPaused = true;
+        clearHighlight();
+      } else {
+        setActiveTool('moveSelect');
+        isPaused = false;
+      }
+    });
+  }
 
   // ── Button: Grid ──────────────────────────────────────────────
   const gridBtn = document.getElementById('yw-grid-btn');
@@ -831,7 +869,7 @@ function createToolbarWidget() {
 
   // ── Close popovers on outside click ───────────────────────────
   document.addEventListener('click', (e) => {
-    if (settingsBtn.classList.contains('yw-popover-open') && !settingsBtn.contains(e.target)) {
+    if (settingsBtn && settingsBtn.classList.contains('yw-popover-open') && !settingsBtn.contains(e.target)) {
       settingsBtn.classList.remove('yw-popover-open');
       if (activeToolId === 'settings') { setActiveTool('moveSelect'); isPaused = false; }
     }
