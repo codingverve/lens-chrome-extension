@@ -254,32 +254,21 @@ function positionOverlayFixed(overlay, el) {
 }
 
 function updateHoverOverlay(el) {
-  if (!el) { 
-    hoverOverlay.style.display = 'none'; 
-    elementLabel.style.display = 'none'; 
+  if (!el) {
+    hoverOverlay.style.display = 'none';
     if (inspectorPanel) inspectorPanel.classList.add('yw-hidden');
     if (marginOverlay) marginOverlay.style.display = 'none';
     if (paddingOverlay) paddingOverlay.style.display = 'none';
-    return; 
+    return;
   }
-  
+
   positionOverlayFixed(hoverOverlay, el);
-  
+
   if (activeToolId !== 'moveSelect') {
     if (inspectorPanel) inspectorPanel.classList.add('yw-hidden');
     if (marginOverlay) marginOverlay.style.display = 'none';
     if (paddingOverlay) paddingOverlay.style.display = 'none';
-    
-    const rect = el.getBoundingClientRect();
-    const tag = el.tagName.toLowerCase();
-    const cls = Array.from(el.classList).filter(c => !c.startsWith('yw-')).slice(0, 1).join('');
-    elementLabel.textContent = cls ? `${tag}.${cls}` : tag;
-    elementLabel.style.display = 'block';
-    const labelTop = rect.top - 22;
-    elementLabel.style.top = (labelTop > 4 ? labelTop : rect.bottom + 4) + 'px';
-    elementLabel.style.left = Math.max(4, rect.left) + 'px';
   } else {
-    elementLabel.style.display = 'none';
     updateInspectorPanel(el);
   }
 }
@@ -1006,16 +995,32 @@ function renderPageGrid() {
   if (!pageGridEl) return;
   pageGridEl.innerHTML = '<div id="yw-page-grid-inner"></div>';
   const inner = pageGridEl.firstElementChild;
-  
-  inner.style.gridTemplateColumns = `repeat(${gridState.cols}, 1fr)`;
-  inner.style.gap = `${gridState.gap}px`;
-  inner.style.padding = `0 ${gridState.margin}px`;
-  
+
+  inner.style.cssText = `
+    display: grid;
+    width: 100%;
+    height: 100vh;
+    grid-template-columns: repeat(${gridState.cols}, 1fr);
+    gap: 0;
+    padding: 0 ${gridState.margin}px;
+    box-sizing: border-box;
+  `;
+
   const rgb = hexToRgb(gridState.color);
+  const colAlpha = gridState.opacity / 100;
   for (let i = 0; i < gridState.cols; i++) {
     const col = document.createElement('div');
     col.className = 'yw-grid-col';
-    col.style.backgroundColor = `rgba(${rgb}, ${gridState.opacity / 100})`;
+    col.style.cssText = `
+      background: rgba(${rgb}, ${colAlpha});
+      height: 100%;
+      position: relative;
+    `;
+    // Add a right-edge guide line between columns
+    if (i < gridState.cols - 1 && gridState.gap > 0) {
+      col.style.marginRight = (gridState.gap / 2) + 'px';
+      col.style.marginLeft = i === 0 ? '0' : (gridState.gap / 2) + 'px';
+    }
     inner.appendChild(col);
   }
 }
@@ -1053,24 +1058,16 @@ async function openPopover(element) {
 
   popoverEl.innerHTML = `
     <div class="yw-popover-header">
-      <span class="yw-tag">${tag.toUpperCase()}${cls ? '.' + cls : ''}</span>
-      <span class="yw-selector" title="${escapeHtml(selector)}">${escapeHtml(displaySel)}</span>
+      <span class="yw-popover-element-label">${tag.toUpperCase()}${cls ? '<span class="yw-popover-cls">.${cls}</span>' : ''}</span>
       <button class="yw-popover-close" id="yw-popover-close">${Icons.x}</button>
     </div>
     <div class="yw-popover-body">
-      <textarea id="yw-comment-input" placeholder="Describe the change you want AI to make here…">${existing ? escapeHtml(existing.comment) : ''}</textarea>
+      <textarea id="yw-comment-input" placeholder="Describe what needs to change here…">${existing ? escapeHtml(existing.comment) : ''}</textarea>
       <div class="yw-popover-actions">
         ${existing ? `<button class="yw-btn yw-btn-danger" id="yw-delete-btn">${Icons.trash} Delete</button>` : ''}
         <button class="yw-btn yw-btn-outline" id="yw-cancel-btn">Cancel</button>
         <button class="yw-btn yw-btn-primary" id="yw-save-btn">${existing ? 'Update' : 'Save'}</button>
       </div>
-    </div>
-    <div class="yw-keynav-hint">
-      <span class="yw-key">Alt</span>/<span class="yw-key">Ctrl</span> + 
-      <span class="yw-key">[</span> Parent &nbsp;
-      <span class="yw-key">]</span> Child &nbsp;
-      <span class="yw-key">←</span><span class="yw-key">→</span> Sibling &nbsp;
-      <span class="yw-key">Esc</span> Close
     </div>`;
 
   document.body.appendChild(popoverEl);
